@@ -101,9 +101,9 @@ class Column
             // an alias of canonicalizer
             'filter' => self::ATTR_CALLABLE,
 
-            'inflator' => self::ATTR_CALLABLE,
+            'inflator' => self::ATTR_ANY,
 
-            'deflator' => self::ATTR_CALLABLE,
+            'deflator' => self::ATTR_ANY,
 
             // renderAs widget
             'renderAs' => self::ATTR_STRING,
@@ -138,6 +138,17 @@ class Column
         return $this;
     }
 
+    public function deflator($deflator)
+    {
+        $this->attributes['deflator'] = $deflator;
+        return $this;
+    }
+
+    public function inflator($inflator)
+    {
+        $this->attributes['inflator'] = $inflator;
+        return $this;
+    }
 
 
     /**

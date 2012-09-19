@@ -152,7 +152,10 @@ class RuntimeColumn
     {
         // run column specified deflator
         if( $this->deflator ) {
-            return call_user_func( $this->deflator, $value );
+            if( is_callable($this->deflator) )
+                return call_user_func( $this->deflator, $value );
+            else 
+                throw new Exception('Unknown type of deflator');
         }
 
         // use global deflator, check self type, and do type casting
@@ -162,7 +165,10 @@ class RuntimeColumn
     public function inflate( $value, $record )
     {
         if( $this->inflator ) {
-            return call_user_func( $this->inflator , $value , $record );
+            if( is_callable($this->inflator) )
+                return call_user_func( $this->inflator , $value , $record );
+            else
+                throw new Exception('Unknown type of inflator.');
         }
         // use global inflator
         return Inflator::inflate( $value , $this->isa );
