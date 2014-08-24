@@ -39,6 +39,9 @@ class Console extends Application
         $this->registerCommand('list-schema'    , 'LazyRecord\\Command\\ListSchemaCommand');
 
         $this->registerCommand('build-schema'   , 'LazyRecord\\Command\\BuildSchemaCommand');
+
+        $this->registerCommand('build-js-model'   , 'LazyRecord\\Command\\BuildJsModelCommand');
+
         $this->registerCommand('clean-schema'   , 'LazyRecord\\Command\\CleanSchemaCommand');
 
         $this->registerCommand('build-basedata' , 'LazyRecord\\Command\\BuildBaseDataCommand');

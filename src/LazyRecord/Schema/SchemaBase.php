@@ -39,6 +39,12 @@ abstract class SchemaBase
 
     protected $_modelName;
 
+    /**
+     * Return thie model name string, which is the last component of the class 
+     * name.
+     *
+     * @return string model name
+     */
     public function getModelName()
     {
         if ( $this->_modelName ) {
@@ -53,6 +59,22 @@ abstract class SchemaBase
         return $this->_modelName = substr($class,$p + 1);
     }
 
+    /**
+     * A resource ID is used for RESTful URL routing and front-end javascript, which is basically 
+     * equivaient to the model name, but characters are in lower case letter.
+     *
+     * @return string resource Id
+     */
+    public function getResourceId() {
+        return strtolower($this->getModelName());
+    }
+
+
+    /**
+     * Add mixin schema class to the model.
+     *
+     * @param string $class
+     */
     public function addMixinSchemaClass($class) 
     {
         $this->mixinSchemas[] = $class;
@@ -63,8 +85,11 @@ abstract class SchemaBase
         return $this->mixinSchemas;
     }
 
-
-
+    /**
+     * Return the seed classes
+     *
+     * @return string[]
+     */
     public function getSeeds()
     {
         return $this->seeds;
