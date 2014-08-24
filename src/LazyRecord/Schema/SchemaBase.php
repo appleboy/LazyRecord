@@ -4,6 +4,10 @@ use RuntimeException;
 use InvalidArgumentException;
 use Exception;
 
+
+/**
+ * SchemaBase class is the parent class of the RuntimeSchema and DeclareSchema
+ */
 abstract class SchemaBase
 {
     const has_one = 1;
