@@ -10,14 +10,27 @@ use Exception;
  */
 abstract class SchemaBase
 {
+    /**
+     * Relationship one-to-one
+     */
     const has_one = 1;
 
+
+    /**
+     * Relationship one-to-many
+     */
     const has_many = 2;
 
+
+    /**
+     * Relationship many-to-many
+     */
     const many_to_many = 3;
 
+    /**
+     * Relationship one-to-parent
+     */
     const belongs_to = 4;
-
 
     public $table;
 
