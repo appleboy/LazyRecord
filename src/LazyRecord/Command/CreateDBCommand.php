@@ -62,7 +62,7 @@ class CreateDBCommand extends BaseCommand
         $logger  = $this->logger;
         $dataSource = $this->getCurrentDataSourceId();
         $connectionManager = \LazyRecord\ConnectionManager::getInstance();
-        $this->createDB( $connectionManager->getDataSource($dataSource));
+        $this->createDB($connectionManager->getDataSource($dataSource));
         $this->logger->info('Done');
     }
 }
