@@ -527,17 +527,18 @@ abstract class BaseModel implements
      */
     public function loadOrCreate(array $args, $byKeys = null)
     {
-        $pk = static::primary_key;
-
         $ret = null;
-        if( $pk && isset($args[$pk]) ) {
+        $pk = static::primary_key;
+        if ($byKeys) {
+            $ret = $this->find(
+                array_intersect_key($args, 
+                    array_fill_keys((array) $byKeys, 1))
+            );
+        } else if ($pk && isset($args[$pk])) {
             $val = $args[$pk];
             $ret = $this->find(array( $pk => $val ));
-        } elseif( $byKeys ) {
-            $ret = $this->find(
-                array_intersect_key( $args , 
-                    array_fill_keys( (array) $byKeys , 1 ))
-            );
+        } else {
+            throw new Exception("primary key is not defined.");
         }
 
         if( $ret && $ret->success 
@@ -860,6 +861,7 @@ abstract class BaseModel implements
             'args' => $args,
             'binds' => $arguments,
             'validations' => $validationResults,
+            'type' => RESULT::TYPE_CREATE,
         ));
     }
 
@@ -980,6 +982,7 @@ abstract class BaseModel implements
         return $this->reportSuccess( 'Data loaded', array( 
             'id' => (isset($this->_data[$pk]) ? $this->_data[$pk] : null),
             'sql' => $sql,
+            'type' => RESULT::TYPE_LOAD,
         ));
     }
 
@@ -999,20 +1002,18 @@ abstract class BaseModel implements
      *
      * @return Result operation result (success or error)
      */
-    public function delete($pkId = NULL)
+    public function delete()
     {
         $k = static::primary_key;
         if (!$k) {
             throw new Exception("primary key is not defined.");
         }
-
-        if ($pkId == NULL && !isset($this->_data[$k])) {
+        if (!isset($this->_data[$k])) {
             throw new Exception('Record is not loaded, Record delete failed.');
         }
 
-        $kVal = $pkId ? $pkId : ($this->_data && isset($this->_data[$k]) ? $this->_data[$k] : NULL);
-
-        if( ! $this->currentUserCan( $this->getCurrentUser() , 'delete' ) ) {
+        $kVal = $this->_data[$k];
+        if (! $this->currentUserCan( $this->getCurrentUser() , 'delete' )) {
             return $this->reportError( _('Permission denied. Can not delete record.') , array( ));
         }
 
@@ -1046,6 +1047,7 @@ abstract class BaseModel implements
         $this->clear();
         return $this->reportSuccess('Record deleted', array( 
             'sql' => $sql,
+            'type' => RESULT::TYPE_DELETE,
             // XXX 'args' => $arguments->toArray(),
         ));
     }
@@ -1220,6 +1222,7 @@ abstract class BaseModel implements
             'id'  => $kVal,
             'sql' => $sql,
             'args' => $args,
+            'type' => RESULT::TYPE_UPDATE
         ));
     }
 
@@ -1253,7 +1256,8 @@ abstract class BaseModel implements
         $this->_data = array_merge($this->_data,$args);
 
         return $this->reportSuccess( 'Update success', array( 
-            'sql' => $sql
+            'sql' => $sql,
+            'type' => RESULT::TYPE_UPDATE,
         ));
     }
 
@@ -1294,7 +1298,8 @@ abstract class BaseModel implements
         $this->_data[ $k ] = $pkId;
 
         return $this->reportSuccess( 'Create success', array( 
-            'sql' => $sql
+            'sql' => $sql,
+            'type' => RESULT::TYPE_CREATE,
         ));
 
     }
@@ -1858,7 +1863,7 @@ abstract class BaseModel implements
         foreach( $this->_data as $k => $v ) {
             $col = $schema->getColumn( $k );
             if ( $col->isa ) {
-                $data[ $k ] = $col->inflate( $v );
+                $data[ $k ] = $col->inflate($v, $this);
             } else {
                 $data[ $k ] = $v;
             }

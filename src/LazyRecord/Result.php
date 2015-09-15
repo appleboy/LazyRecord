@@ -7,6 +7,13 @@ class ResultException extends Exception { }
 
 class Result
 {
+    const TYPE_NONE = 0;
+    const TYPE_CREATE = 1;
+    const TYPE_LOAD = 2;
+    const TYPE_UPDATE = 3;
+    const TYPE_DELETE = 4;
+
+
     public $id;
 
 
@@ -48,6 +55,10 @@ class Result
      */
     public $vars;
 
+    /**
+     * @var const CREATE_RESULT, READ_RESULT, UPDATE_RESULT, DELETE_RESULT
+     */
+    public $type = RESULT::TYPE_NONE;
 
     public $code;
 
@@ -100,6 +111,13 @@ class Result
         $this->message = $msg;
     }
 
+    public function setType($type) {
+        $this->type = $type;
+    }
+
+    public function getType($type) {
+        return $this->type;
+    }
 
 
     /**
@@ -109,8 +127,9 @@ class Result
     {
         $vlds = array();
         foreach( $this->validations as $k => $vld ) {
-            if( $vld->valid )
+            if ($vld->valid) {
                 $vlds[$k] = $vld;
+            }
         }
         return $vlds;
     }
